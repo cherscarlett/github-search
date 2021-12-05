@@ -1,0 +1,146 @@
+body {
+  margin: 0;
+  background: rgb(24, 23, 23);
+  color: white;
+  font-family: 'Netflix Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --primary: #e50914;
+  --transparentWhite: rgba(255, 255, 255, .05);
+}
+
+.App {
+  margin: 1rem 2rem;
+}
+
+h2 {
+  text-transform: capitalize;
+}
+
+.hasError {
+  border-color: var(--primary);  
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+button {
+  margin: 10px 0;
+  padding: 7px 17px;
+  font-size: 1.2rem;
+  border-radius: 3px;
+  border: none;
+}
+
+input {
+  padding: 7px 17px;
+  font-size: 1.2rem;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.organization-select__button {
+  background-color: var(--primary);
+  color: white;
+  margin-left: -2px;
+  padding: 9px 17px;
+}
+
+article {
+  border-top: 1px solid rgba(255, 255, 255, .3);
+  background: var(--transparentWhite);
+  text-align: right;
+  padding: 0 12px;
+}
+
+article:last-of-type {
+  border-bottom: 1px solid var(--transparentWhite)
+}
+
+article header {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+
+article header h1 {
+  margin: 0;
+}
+
+.repository-summary__meta {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.repository-summary__meta ul {
+  display: flex;
+  margin-left: auto;
+}
+
+.repository-summary__description {
+  padding: 12px 0;
+  text-align: left;
+}
+
+.repository-summary__button {
+  background: rgba(0, 0, 0, .4);
+  border: 1px solid black;
+  color: white;
+  font-size: .8rem;
+}
+
+.repository-summary__meta time {
+  margin-left: auto;
+  opacity: .4;
+  font-size: .8rem;
+}
+
+.repository-summary__meta ul li {
+  margin-left: 12px;
+}
+
+.commit-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  flex-wrap: wrap;
+  font-size: .6rem;
+  border-bottom: 1px solid var(--transparentWhite);
+  padding: 12px;
+}
+
+.commit-summary__author {
+  align-self: flex-start;
+}
+
+.commit-summary__author a {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  white-space: nowrap;
+  font-size: .8rem;
+}
+
+.commit-summary__author img {
+  height: 30px;
+  margin-right: 6px;
+}
+
+.commit-summary__message {
+  width: 80%;
+  margin-left: auto;
+  font-size: .8rem;
+}
+
+.commit-summary__time {
+  width: 25%;
+  padding-top: 12px;
+  opacity: .4;
+}
