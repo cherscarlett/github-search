@@ -4,15 +4,40 @@ import OrganizationContext from '../contexts/OrganizationContext';
 
 const OrganizationSelect = () => {
   const [error, setError] = useState([]);
-  const [orgInputState, setOrgInputState] = useState([]);
+  const [searchInputState, setSearchInputState] = useState([]);
 
   const { organization, setOrganization } = useContext(OrganizationContext);
 
  const fetchOrganization = async () => {
-    const response = await fetch(`https://api.github.com/orgs/${orgInputState}`, {
+    const regex = /^[a-zA-Z0-9]+$/;
+    let query;
+    let search = searchInputState;
+    let url = `https://api.github.com/orgs/${search}`;
+    let repositories = [];
+
+    if (!searchInputState.match(regex)) {
+      if (isInputQualified(searchInputState)) {
+        const values = searchInputState.split(' ');
+
+        values.forEach(value => {
+          query = getSearchTerm(value);
+
+          if (query) {
+            url = `https://api.github.com/search/repositories?q=org:${search}%20${query}`
+          } else if (value.match(regex)) {
+            setSearchInputState(value)
+            search = value;
+          }
+        });
+      } else {
+        setError('Please check your syntax');
+        return;
+      }
+    }
+
+    const response = await fetch(url, {
       headers: {
-        Authorization: `token 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`,
-        Accept: 'application/vnd.github.v3+json',
+        'User-Agent': 'cherscarlett',
       },
     });
 
@@ -21,20 +46,40 @@ const OrganizationSelect = () => {
     } else {
       setError(null);
       const data = await response.json();
-      setOrganization(data.login);
-      const url = new URL(`${window.location.origin}/${data.login}`);
-      window.history.pushState({}, '', url);
+      
+      if (data.items) {
+        repositories = data.items;
+      }
+
+      setOrganization({name: search, repositories});
+      const historyUrl = new URL(`${window.location.origin}/${search}`);
+      window.history.pushState({}, '', historyUrl);
     }
   };
 
+  function getSearchTerm(search) {
+    const regex = /(stars+:([0-9]+|[\*])\.\.([0-9]+|[\*]))|(stars+:[\<\>\=]?[\<\>\=][0-9]+)/g;
+    if (search.match(regex)) {
+      return search;
+    } else {
+      return false;
+    }
+  }
+
+  function isInputQualified(input) {
+    const inputArray = input.split(' ');
+
+    return Array.isArray(inputArray);
+  }
+
   const handleOrgInput = (event) => {
-    setOrgInputState(event.target.value);
+    setSearchInputState(event.target.value);
   }
 
   const handleOrgSet = (event) => {
     event.preventDefault();
     
-    if (orgInputState) {
+    if (searchInputState) {
       fetchOrganization();
     }
   }
@@ -47,7 +92,7 @@ const OrganizationSelect = () => {
       <p>Enter an organization's name to search for its Repositories</p>
 
       <form onSubmit={handleOrgSet}>
-        <input type="text" placeholder={organization} value={orgInputState} onChange={handleOrgInput} className={error && 'hasError'} /> 
+        <input type="text" placeholder={organization.name} value={searchInputState} onChange={handleOrgInput} className={error && 'hasError'} /> 
         <button className="organization-select__button" type="submit">Fetch Repositories</button>
       </form>
 

@@ -14,15 +14,14 @@ const App = () => {
   const pathname = encodeURIComponent(window.location.pathname.replace('/', ''));
 
   const [repos, setRepos] = useState([]);
-  const [organization, setOrganization] = useState(pathname ? pathname : 'Netflix');
+  const [organization, setOrganization] = useState({name: pathname ? pathname : 'Netflix', repositories: []});
 
   useEffect(() => {
-    if (organization) {
+    if (organization && !organization.repositories.length) {
       const fetchRepos = async () => {
-        const response = await fetch(`https://api.github.com/orgs/${organization}/repos`, {
+        const response = await fetch(`https://api.github.com/orgs/${organization.name}/repos`, {
           headers: {
-            Authorization: `token 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`,
-            Accept: 'application/vnd.github.v3+json',
+            'User-Agent': 'cherscarlett',
           },
         });
         if (response.status === 200) {
@@ -35,6 +34,8 @@ const App = () => {
         }
       };
       fetchRepos();
+    } else if (organization.repositories) {
+      setRepos(organization.repositories);
     }
   }, [organization]);
 
@@ -44,7 +45,7 @@ const App = () => {
         <h1>Github Repo Search</h1>
         <OrganizationSelect />
 
-        <h2>{organization}</h2>
+        <h2>{organization.name}</h2>
         {repos.map((repo, index) => (
           <RepositorySummary repo={repo} key={index} />
         ))}
