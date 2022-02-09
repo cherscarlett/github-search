@@ -28,7 +28,7 @@ function getSearchTerm(search) {
 
       for (let i = 0; i <= 1; i++) {
         const term = terms[i];
-        
+
         if (term.match(/([0-9]+|[\*])\-([0-9]+|[\*])/g)) {
           return errors.usedADash;
         } else if (!term.match(/^[a-zA-Z0-9]+$/)) {
@@ -74,9 +74,11 @@ const OrganizationSelect = () => {
               if (Object.values(errors).indexOf(query) > -1) {
                 setError(query)
               } else {
+                setError(null);
                 url = `https://api.github.com/search/repositories?q=org:${search}%20${query}`;
               }
             } else if (value.match(regex)) {
+              setError(null);
               search = value;
             }
           });
