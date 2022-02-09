@@ -91,7 +91,7 @@ const OrganizationSelect = () => {
 
       const storedRepos = sessionStorage.getItem(search) || [];
 
-      if (!storedRepos.length || query && !error) {
+      if (!storedRepos.length || (query && !error)) {
         const response = await fetch(url, {
           headers: {
             'User-Agent': 'cherscarlett',

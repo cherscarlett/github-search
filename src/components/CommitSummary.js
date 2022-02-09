@@ -6,7 +6,7 @@ const CommitSummary = ({commit}) => {
 
   const author = commit.author && 
     <a href={commit.author.url}>
-      <img src={commit.author.avatar_url} />
+      <img alt={`avatar of ${commit.commit.author.name}`} src={commit.author.avatar_url} />
       {commit.commit.author.name}
     </a>;
 
