@@ -3,6 +3,11 @@ import { writeStorage } from '@rehooks/local-storage';
 
 import OrganizationContext from '../contexts/OrganizationContext';
 
+const errors =  {
+  notStars: 'You may only filter by a range of stars, e.g. stars:1..50',
+  usedADash: 'You can search a range of stars using .., e.g. stars:1..50 or stars:50..*',
+  wrongSyntax: 'You can search stars using a range, e.g. 1..50, or comparison symbols like stars:<=50 or stars:>50'
+}
 
 function setHistory(search) {
   const historyUrl = new URL(`${window.location.origin}/${search}`);
@@ -14,6 +19,24 @@ function getSearchTerm(search) {
   if (search.match(regex)) {
     return search;
   } else {
+    const terms = search.split(':');
+
+    if (terms.length === 2) {
+      if (!terms.includes('stars')) {
+        return errors.notStars;
+      }
+
+      for (let i = 0; i <= 1; i++) {
+        const term = terms[i];
+        
+        if (term.match(/([0-9]+|[\*])\-([0-9]+|[\*])/g)) {
+          return errors.usedADash;
+        } else if (!term.match(/^[a-zA-Z0-9]+$/)) {
+          return errors.wrongSyntax;
+        }
+      }
+    }
+
     return false;
   }
 }
@@ -48,20 +71,25 @@ const OrganizationSelect = () => {
             query = getSearchTerm(value);
   
             if (query) {
-              url = `https://api.github.com/search/repositories?q=org:${search}%20${query}`
+              if (Object.values(errors).indexOf(query) > -1) {
+                setError(query)
+              } else {
+                url = `https://api.github.com/search/repositories?q=org:${search}%20${query}`;
+              }
             } else if (value.match(regex)) {
               search = value;
             }
           });
         } else {
-          setError('Please check your syntax');
+          setError('You may only search for one organization and, optionally, a range of stars. e.g. `netflix stars:1..50`');
+
           return;
         }
       }
 
       const storedRepos = sessionStorage.getItem(search) || [];
 
-      if (!storedRepos.length) {
+      if (!storedRepos.length || query && !error) {
         const response = await fetch(url, {
           headers: {
             'User-Agent': 'cherscarlett',
@@ -76,7 +104,7 @@ const OrganizationSelect = () => {
           
           if (data.items) {
             repositories = data.items;
-            writeStorage(search, repositories);
+            !query && writeStorage(search, repositories);
           }
   
           setOrganization({name: search, repositories});
