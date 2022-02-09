@@ -12,9 +12,16 @@ import './styles.css';
 
 const App = () => {
   const pathname = encodeURIComponent(window.location.pathname.replace('/', ''));
+  const name = pathname ? pathname : 'netflix';
+  const storedRepos = sessionStorage.getItem(name) || [];
+  let repositories = [];
 
+  if (storedRepos.length) {
+    repositories = JSON.parse(storedRepos);
+  }
+  
   const [repos, setRepos] = useState([]);
-  const [organization, setOrganization] = useState({name: pathname ? pathname : 'Netflix', repositories: []});
+  const [organization, setOrganization] = useState({name, repositories});
 
   useEffect(() => {
     if (organization && !organization.repositories.length) {
@@ -27,8 +34,9 @@ const App = () => {
         if (response.status === 200) {
           const data = await response.json();
           setRepos(data);
+          sessionStorage.setItem(organization.name, JSON.stringify(data));
         } else {
-         const url = new URL(window.location.origin);
+          const url = new URL(window.location.origin);
           window.history.pushState({}, '', url);
           setOrganization('Netflix');
         }
@@ -37,7 +45,15 @@ const App = () => {
     } else if (organization.repositories) {
       setRepos(organization.repositories);
     }
-  }, [organization]);
+  }, [organization, setRepos, setOrganization]);
+
+  useEffect(() => {
+    window.addEventListener('beforeunload', sessionStorage.clear());
+
+    return () => {
+      window.removeEventListener('beforeunload', sessionStorage.clear());
+    };
+  }, []);
 
   return (
     <OrganizationContext.Provider value={{organization, setOrganization}}>

@@ -1,6 +1,28 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { writeStorage } from '@rehooks/local-storage';
 
 import OrganizationContext from '../contexts/OrganizationContext';
+
+
+function setHistory(search) {
+  const historyUrl = new URL(`${window.location.origin}/${search}`);
+  window.history.pushState({}, '', historyUrl);
+}
+
+function getSearchTerm(search) {
+  const regex = /(stars+:([0-9]+|[\*])\.\.([0-9]+|[\*]))|(stars+:[\<\>\=]?[\<\>\=][0-9]+)/g;
+  if (search.match(regex)) {
+    return search;
+  } else {
+    return false;
+  }
+}
+
+function isInputQualified(input) {
+  const inputArray = input.split(' ');
+
+  return Array.isArray(inputArray);
+}
 
 const OrganizationSelect = () => {
   const [error, setError] = useState([]);
@@ -8,69 +30,67 @@ const OrganizationSelect = () => {
 
   const { organization, setOrganization } = useContext(OrganizationContext);
 
- const fetchOrganization = async () => {
-    const regex = /^[a-zA-Z0-9]+$/;
-    let query;
-    let search = searchInputState;
-    let url = `https://api.github.com/orgs/${search}`;
-    let repositories = [];
+  const [searchTerm, setSearchTerm] = useState(organization.name);
 
-    if (!searchInputState.match(regex)) {
-      if (isInputQualified(searchInputState)) {
-        const values = searchInputState.split(' ');
+  useEffect(() => {
+    const fetchOrganization = async () => {
+      const regex = /^[a-zA-Z0-9]+$/;
+      let query;
+      let search = searchTerm;
+      let url = `https://api.github.com/orgs/${search}`;
+      let repositories = [];
+  
+      if (!search.match(regex)) {
+        if (isInputQualified(search)) {
+          const values = search.split(' ');
+  
+          values.forEach(value => {
+            query = getSearchTerm(value);
+  
+            if (query) {
+              url = `https://api.github.com/search/repositories?q=org:${search}%20${query}`
+            } else if (value.match(regex)) {
+              search = value;
+            }
+          });
+        } else {
+          setError('Please check your syntax');
+          return;
+        }
+      }
 
-        values.forEach(value => {
-          query = getSearchTerm(value);
+      const storedRepos = sessionStorage.getItem(search) || [];
 
-          if (query) {
-            url = `https://api.github.com/search/repositories?q=org:${search}%20${query}`
-          } else if (value.match(regex)) {
-            setSearchInputState(value)
-            search = value;
-          }
+      if (!storedRepos.length) {
+        const response = await fetch(url, {
+          headers: {
+            'User-Agent': 'cherscarlett',
+          },
         });
+  
+        if (response.status !== 200) {
+          setError('Please enter a valid Github Organization');
+        } else {
+          setError(null);
+          const data = await response.json();
+          
+          if (data.items) {
+            repositories = data.items;
+            writeStorage(search, repositories);
+          }
+  
+          setOrganization({name: search, repositories});
+          setHistory(search);
+        }
       } else {
-        setError('Please check your syntax');
-        return;
+        const repos = !JSON.parse(storedRepos);
+
+        setOrganization({name: search, repositories: repos});
+        setHistory(search);
       }
-    }
-
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'cherscarlett',
-      },
-    });
-
-    if (response.status !== 200) {
-      setError('Please enter a valid Github Organization');
-    } else {
-      setError(null);
-      const data = await response.json();
-      
-      if (data.items) {
-        repositories = data.items;
-      }
-
-      setOrganization({name: search, repositories});
-      const historyUrl = new URL(`${window.location.origin}/${search}`);
-      window.history.pushState({}, '', historyUrl);
-    }
-  };
-
-  function getSearchTerm(search) {
-    const regex = /(stars+:([0-9]+|[\*])\.\.([0-9]+|[\*]))|(stars+:[\<\>\=]?[\<\>\=][0-9]+)/g;
-    if (search.match(regex)) {
-      return search;
-    } else {
-      return false;
-    }
-  }
-
-  function isInputQualified(input) {
-    const inputArray = input.split(' ');
-
-    return Array.isArray(inputArray);
-  }
+    };
+    fetchOrganization();
+  }, [searchTerm, setHistory, setOrganization, writeStorage]);
 
   const handleOrgInput = (event) => {
     setSearchInputState(event.target.value);
@@ -80,7 +100,7 @@ const OrganizationSelect = () => {
     event.preventDefault();
     
     if (searchInputState) {
-      fetchOrganization();
+      setSearchTerm(searchInputState);
     }
   }
 
