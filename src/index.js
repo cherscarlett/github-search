@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
+
 import OrganizationSelect from './components/OrganizationSelect';
 import RepositorySummary from './components/RepositorySummary';
 import OrganizationContext from './contexts/OrganizationContext';
@@ -19,7 +20,7 @@ const App = () => {
   if (storedRepos.length) {
     repositories = JSON.parse(storedRepos);
   }
-  
+
   const [repos, setRepos] = useState([]);
   const [organization, setOrganization] = useState({name, repositories});
 

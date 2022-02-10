@@ -1,12 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { writeStorage } from '@rehooks/local-storage';
 
 import OrganizationContext from '../contexts/OrganizationContext';
 
 const errors =  {
   notStars: 'You may only filter by a range of stars, e.g. stars:1..50',
   usedADash: 'You can search a range of stars using .., e.g. stars:1..50 or stars:50..*',
-  wrongSyntax: 'You can search stars using a range, e.g. 1..50, or comparison symbols like stars:<=50 or stars:>50'
+  wrongSyntax: 'You can search stars using a range, e.g. 1..50, or comparison symbols like stars:<=50 or stars:>50',
+  tooManySearchTerms: 'You can only search for one organization at a time, and optionally, filter by stars, e.g. netflix stars:1..50'
 }
 
 function setHistory(search) {
@@ -66,6 +66,12 @@ const OrganizationSelect = () => {
       if (!search.match(regex)) {
         if (isInputQualified(search)) {
           const values = search.split(' ');
+
+          if (values.length > 2) {
+            setError(errors.tooManySearchTerms);
+
+            return;
+          }
   
           values.forEach(value => {
             query = getSearchTerm(value);
@@ -83,7 +89,7 @@ const OrganizationSelect = () => {
             }
           });
         } else {
-          setError('You may only search for one organization and, optionally, a range of stars. e.g. `netflix stars:1..50`');
+          setError(errors.tooManySearchTerms);
 
           return;
         }
@@ -106,7 +112,7 @@ const OrganizationSelect = () => {
           
           if (data.items) {
             repositories = data.items;
-            !query && writeStorage(search, repositories);
+            !query && sessionStorage.setItem(search, JSON.stringify(repositories));
           }
   
           setOrganization({name: search, repositories});
@@ -120,7 +126,7 @@ const OrganizationSelect = () => {
       }
     };
     fetchOrganization();
-  }, [searchTerm, setHistory, setOrganization, writeStorage]);
+  }, [searchTerm, setHistory, setOrganization]);
 
   const handleOrgInput = (event) => {
     setSearchInputState(event.target.value);
@@ -146,7 +152,7 @@ const OrganizationSelect = () => {
         <button className="organization-select__button" type="submit">Fetch Repositories</button>
       </form>
 
-      {error}
+      {error && <span className="error">{error}</span>}
     </>
   )
 };
