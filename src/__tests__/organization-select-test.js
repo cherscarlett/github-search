@@ -30,11 +30,13 @@ describe("Organization Select", () => {
       }
 
     it("Doesn't search for bees", () => {
-        act(() => render(
-            <OrganizationContext.Provider value={{organization, noop}}>
-                <OrganizationSelect />
-            </OrganizationContext.Provider>, container)
-        );
+        act(() => { 
+            render(
+                <OrganizationContext.Provider value={{organization, noop}}>
+                    <OrganizationSelect />
+                </OrganizationContext.Provider>, container)
+            
+        });
 
         const input = container.querySelector('input');
         const button = container.querySelector('button');
@@ -48,11 +50,13 @@ describe("Organization Select", () => {
     });
 
     it("Informs user to use .. instead of - to search a range", () => {
-        act(() => render(
-            <OrganizationContext.Provider value={{organization, noop}}>
-                <OrganizationSelect />
-            </OrganizationContext.Provider>, container)
-        );
+        act(() => { 
+            render(
+                <OrganizationContext.Provider value={{organization, noop}}>
+                    <OrganizationSelect />
+                </OrganizationContext.Provider>, container)
+            
+        });
 
         const input = container.querySelector('input');
         const button = container.querySelector('button');
@@ -66,11 +70,13 @@ describe("Organization Select", () => {
     });
 
     it("Informs user they've made a general error and explains syntax", () => {
-        act(() => render(
-            <OrganizationContext.Provider value={{organization, noop}}>
-                <OrganizationSelect />
-            </OrganizationContext.Provider>, container)
-        );
+        act(() => { 
+            render(
+                <OrganizationContext.Provider value={{organization, noop}}>
+                    <OrganizationSelect />
+                </OrganizationContext.Provider>, container)
+            
+        });
 
         const input = container.querySelector('input');
         const button = container.querySelector('button');
@@ -84,11 +90,13 @@ describe("Organization Select", () => {
     });
 
     it("Informs user they can only search by one org and optionally a range of stars", () => {
-        act(() => render(
-            <OrganizationContext.Provider value={{organization, noop}}>
-                <OrganizationSelect />
-            </OrganizationContext.Provider>, container)
-        );
+        act(() => { 
+            render(
+                <OrganizationContext.Provider value={{organization, noop}}>
+                    <OrganizationSelect />
+                </OrganizationContext.Provider>, container)
+            
+        });
 
         const input = container.querySelector('input');
         const button = container.querySelector('button');
