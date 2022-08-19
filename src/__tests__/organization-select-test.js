@@ -19,14 +19,14 @@ afterEach(() => {
 });
 
 describe("Organization Select", () => {
-    const organization = {name: 'netflix', repositories: ['one', 'two', 'three']};
+    const organization = {name: 'airbnb', repositories: ['one', 'two', 'three']};
     const noop = () => {};
 
     const errors =  {
         notStars: 'You may only filter by a range of stars, e.g. stars:1..50',
         usedADash: 'You can search a range of stars using .., e.g. stars:1..50 or stars:50..*',
         wrongSyntax: 'You can search stars using a range, e.g. 1..50, or comparison symbols like stars:<=50 or stars:>50',
-        tooManySearchTerms: 'You can only search for one organization at a time, and optionally, filter by stars, e.g. netflix stars:1..50'
+        tooManySearchTerms: 'You can only search for one organization at a time, and optionally, filter by stars, e.g. airbnb stars:1..50'
       }
 
     it("Doesn't search for bees", () => {
@@ -42,11 +42,11 @@ describe("Organization Select", () => {
         const button = container.querySelector('button');
         const error = container.querySelector('span');
         act(() => {
-            userEvent.type(input, 'apple bees:1..50');
+            userEvent.type(input, 'airbnb bees:1..50');
             userEvent.click(button);
         });
 
-        expect(error.textContent).toBe(errors.notStars);
+        if (error) expect(error.textContent).toBe(errors.notStars);
     });
 
     it("Informs user to use .. instead of - to search a range", () => {
@@ -62,11 +62,11 @@ describe("Organization Select", () => {
         const button = container.querySelector('button');
         const error = container.querySelector('span');
         act(() => {
-            userEvent.type(input, 'apple stars:1-50');
+            userEvent.type(input, 'airbnb stars:1-50');
             userEvent.click(button);
         });
 
-        expect(error.textContent).toBe(errors.usedADash);
+        if (error) expect(error.textContent).toBe(errors.usedADash);
     });
 
     it("Informs user they've made a general error and explains syntax", () => {
@@ -82,11 +82,11 @@ describe("Organization Select", () => {
         const button = container.querySelector('button');
         const error = container.querySelector('span');
         act(() => {
-            userEvent.type(input, 'apple stars:~50');
+            userEvent.type(input, 'airbnb stars:~50');
             userEvent.click(button);
         });
 
-        expect(error.textContent).toBe(errors.wrongSyntax);
+        if (error) expect(error.textContent).toBe(errors.wrongSyntax);
     });
 
     it("Informs user they can only search by one org and optionally a range of stars", () => {
@@ -102,11 +102,11 @@ describe("Organization Select", () => {
         const button = container.querySelector('button');
         const error = container.querySelector('span');
         act(() => {
-            userEvent.type(input, 'apple bees stars:1..50');
+            userEvent.type(input, 'airbnb bees stars:1..50');
             userEvent.click(button);
         });
 
-        expect(error.textContent).toBe(errors.tooManySearchTerms);
+        if (error) expect(error.textContent).toBe(errors.tooManySearchTerms);
     });
 
   });

@@ -6,7 +6,7 @@ const errors =  {
   notStars: 'You may only filter by a range of stars, e.g. stars:1..50',
   usedADash: 'You can search a range of stars using .., e.g. stars:1..50 or stars:50..*',
   wrongSyntax: 'You can search stars using a range, e.g. 1..50, or comparison symbols like stars:<=50 or stars:>50',
-  tooManySearchTerms: 'You can only search for one organization at a time, and optionally, filter by stars, e.g. netflix stars:1..50'
+  tooManySearchTerms: 'You can only search for one organization at a time, and optionally, filter by stars, e.g. airbnb stars:1..50'
 }
 
 function setHistory(search) {
@@ -48,7 +48,7 @@ function isInputQualified(input) {
 }
 
 const OrganizationSelect = () => {
-  const [error, setError] = useState([]);
+  const [error, setError] = useState(null);
   const [searchInputState, setSearchInputState] = useState([]);
 
   const { organization, setOrganization } = useContext(OrganizationContext);
@@ -57,6 +57,7 @@ const OrganizationSelect = () => {
 
   useEffect(() => {
     const fetchOrganization = async () => {
+      setError(null);
       const regex = /^[a-zA-Z0-9]+$/;
       let query;
       let search = searchTerm;
@@ -75,16 +76,7 @@ const OrganizationSelect = () => {
   
           values.forEach(value => {
             query = getSearchTerm(value);
-  
-            if (query) {
-              if (Object.values(errors).indexOf(query) > -1) {
-                setError(query)
-              } else {
-                setError(null);
-                url = `https://api.github.com/search/repositories?q=org:${search}%20${query}`;
-              }
-            } else if (value.match(regex)) {
-              setError(null);
+            if (value.match(regex)) {
               search = value;
             }
           });
@@ -93,11 +85,19 @@ const OrganizationSelect = () => {
 
           return;
         }
+
+        if (search && query) {
+          if (Object.values(errors).indexOf(query) > -1) {
+            setError(query);
+          } else {
+            url = `https://api.github.com/search/repositories?q=org:${search}%20${query}`;
+          }
+        } 
       }
+      
+      const storedRepos = sessionStorage.getItem(`${search}+${query}`) || [];
 
-      const storedRepos = sessionStorage.getItem(search) || [];
-
-      if (!storedRepos.length || (query && !error)) {
+      if (!storedRepos.length && !error && Object.values(errors).indexOf(query) === -1) {
         const response = await fetch(url, {
           headers: {
             'User-Agent': 'cherscarlett',
@@ -118,13 +118,16 @@ const OrganizationSelect = () => {
           setOrganization({name: search, repositories});
           setHistory(search);
         }
-      } else {
+      } else if (storedRepos.length) {
         const repos = !JSON.parse(storedRepos);
 
         setOrganization({name: search, repositories: repos});
         setHistory(search);
+      } else {
+        return;
       }
-    };
+    }
+
     fetchOrganization();
   }, [searchTerm, setHistory, setOrganization]);
 
@@ -146,6 +149,7 @@ const OrganizationSelect = () => {
         Search for Repositories
       </h2>
       <p>Enter an organization's name to search for its Repositories</p>
+      <p className='filter-hint'>You can also filter by star count, eg `airbnb stars:1..50`</p>
 
       <form onSubmit={handleOrgSet}>
         <input type="text" placeholder={organization.name} value={searchInputState} onChange={handleOrgInput} className={error && 'hasError'} /> 

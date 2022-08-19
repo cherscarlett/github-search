@@ -13,7 +13,7 @@ import './styles.css';
 
 const App = () => {
   const pathname = encodeURIComponent(window.location.pathname.replace('/', ''));
-  const name = pathname ? pathname : 'netflix';
+  const name = pathname ? pathname : 'airbnb';
   const storedRepos = sessionStorage.getItem(name) || [];
   let repositories = [];
 
@@ -39,7 +39,7 @@ const App = () => {
         } else {
           const url = new URL(window.location.origin);
           window.history.pushState({}, '', url);
-          setOrganization('Netflix');
+          setOrganization('airbnb');
         }
       };
       fetchRepos();

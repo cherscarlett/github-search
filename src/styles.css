@@ -2,7 +2,7 @@ body {
   margin: 0;
   background: rgb(24, 23, 23);
   color: white;
-  font-family: 'Netflix Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-family: 'AirBnb Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
   --primary: #e50914;
   --transparentWhite: rgba(255, 255, 255, .05);
 }
@@ -143,4 +143,9 @@ article header h1 {
   width: 25%;
   padding-top: 12px;
   opacity: .4;
+}
+
+.filter-hint {
+  font-size: .8rem;
+  opacity: .8;
 }
