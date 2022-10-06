@@ -1,14 +1,24 @@
 body {
   margin: 0;
   background: rgb(24, 23, 23);
-  color: white;
-  font-family: 'AirBnb Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
+  color: var(--transparentWhiteDarker);
+  font-family: 'netflix Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
   --primary: #e50914;
-  --transparentWhite: rgba(255, 255, 255, .05);
+  --primaryDark: #c40812;
+  --transparentWhite: rgba(255,255,255,.05);
+  --borderRadius: 3px;
+  --transparentWhiteDarker: rgba(255,255,255,.9);
 }
 
 .App {
-  margin: 1rem 2rem;
+  margin: 1rem auto;
+  max-width: 80vw;
+  min-width: 300px;
+}
+
+h1 {
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 h2 {
@@ -27,14 +37,28 @@ a {
 button {
   margin: 10px 0;
   padding: 7px 17px;
-  font-size: 1.2rem;
-  border-radius: 3px;
+  font-size: 0.8rem;
+  border-radius: var(--borderRadius);
   border: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  letter-spacing: 2px;
 }
 
 input {
   padding: 7px 17px;
   font-size: 1.2rem;
+  vertical-align: middle;
+  opacity: .8;
+  transition: opacity 300ms ease-in-out;
+  border-color: transparent;
+  border-radius: var(--borderRadius);
+}
+
+input:active, input:focus {
+  opacity: 1;
+  border-color: transparent;
+  outline: 0;
 }
 
 ul {
@@ -43,33 +67,81 @@ ul {
   margin: 0;
 }
 
+.organization-select {
+  border: 1px solid var(--transparentWhite);
+  border-radius: var(--borderRadius);
+  padding: 1rem 2rem;
+  background-image: linear-gradient(180deg,var(--transparentWhite),rgba(255,255,255,.01));
+}
+
 .organization-select__button {
   background-color: var(--primary);
+  background-image: linear-gradient(180deg,var(--primary),var(--primaryDark));
   color: white;
-  margin-left: -2px;
-  padding: 9px 17px;
+  margin-left: -4px;
+  padding: 13px 17px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 25px rgb(0 0 0 / 11%);
+  transition: color .2s;
+}
+
+.organization-select__button::before {
+  content: "";
+  display: block;
+  position: absolute;
+  background: rgba(0,0,0,.2);
+  z-index: -1;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  box-shadow: inset 0 0 1rem rgba(0,0,0,.8);
+}
+
+.organization-select__button::after {
+  content: "";
+  display: block;
+  background: url(/button-bg-pattern.png) repeat-x 0 0;
+  background-size: auto 100%;
+  background-position: 0 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: .3;
+  animation: button-background 30s linear infinite;
+  animation-play-state: paused;
+  will-change: background-position;
+  transition: .4s ease;
+}
+
+.organization-select__button:hover::after {
+  animation-play-state: running;
+}
+
+@keyframes button-background {
+  0% {
+    background-position:0 0
+  } 
+  to {
+    background-position:100% 0
+  }
 }
 
 article {
-  border-top: 1px solid rgba(255, 255, 255, .3);
-  background: var(--transparentWhite);
+  border: 1px solid var(--transparentWhite);
   text-align: right;
-  padding: 0 12px;
-}
-
-article:last-of-type {
-  border-bottom: 1px solid var(--transparentWhite)
+  margin: 1rem 0;
+  border-radius: var(--borderRadius);
 }
 
 article header {
   display: flex;
   align-items: center;
-  padding: 0 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, .1);
-}
-
-article header h1 {
-  margin: 0;
+  padding: 12px;
+  background-image: linear-gradient(180deg,var(--transparentWhite),rgba(255,255,255,.01));
 }
 
 .repository-summary__meta {
@@ -84,8 +156,9 @@ article header h1 {
 }
 
 .repository-summary__description {
-  padding: 12px 0;
+  padding: 12px;
   text-align: left;
+  color: var(--transparentWhiteDarker);
 }
 
 .repository-summary__button {
@@ -93,12 +166,21 @@ article header h1 {
   border: 1px solid black;
   color: white;
   font-size: .8rem;
+  margin: 12px;
 }
 
-.repository-summary__meta time {
-  margin-left: auto;
+.repository-summary h1 {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.repository-summary__time {
   opacity: .4;
-  font-size: .8rem;
+  font-size: .7rem;
+  font-weight: normal;
+  letter-spacing: initial;
 }
 
 .repository-summary__meta ul li {
@@ -111,41 +193,75 @@ article header h1 {
   align-items: center;
   text-align: left;
   flex-wrap: wrap;
-  font-size: .6rem;
-  border-bottom: 1px solid var(--transparentWhite);
+  font-size: .8rem;
+  border: 1px solid var(--transparentWhite);
   padding: 12px;
+  border-radius: var(--borderRadius);
+  margin: 12px;
 }
 
 .commit-summary__author {
-  align-self: flex-start;
+  align-self: flex-end;
+  font-size: .7rem;
+  display: flex;
+  align-items: center;
 }
 
-.commit-summary__author a {
+.commit-summary__author__name {
   display: flex;
-  justify-content: flex-start;
   align-items: center;
-  white-space: nowrap;
-  font-size: .8rem;
 }
 
 .commit-summary__author img {
-  height: 30px;
+  height: 20px;
+}
+
+.commit-summary__author__image {
+  height: 20px;
+  width: 20px;
+  overflow: hidden;
+  border-radius: 50%;
   margin-right: 6px;
 }
 
 .commit-summary__message {
-  width: 80%;
-  margin-left: auto;
-  font-size: .8rem;
+  width: 100%;
+  padding: 12px 0;
 }
 
 .commit-summary__time {
-  width: 25%;
-  padding-top: 12px;
-  opacity: .4;
+  opacity: .8;
+}
+
+.commit-summary__sha {
+  font-size: .7rem;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: var(--borderRadius);
+  display: flex;
+  background-color: var(--transparentWhite);
+  margin-left: auto;
+  width: 100px;
+}
+
+.commit-summary__sha a {
+  margin-right: 2px;
+  border-right: 1px solid rgba(255,255,255,.1);
+}
+
+.commit-summary__sha > * {
+  padding: 12px;
+}
+
+clipboard-copy {
+  width: fit-content;
 }
 
 .filter-hint {
-  font-size: .8rem;
+  font-size: .7rem;
   opacity: .8;
+}
+
+.error {
+  color: var(--primary);
 }

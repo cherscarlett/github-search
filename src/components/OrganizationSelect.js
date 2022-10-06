@@ -6,7 +6,7 @@ const errors =  {
   notStars: 'You may only filter by a range of stars, e.g. stars:1..50',
   usedADash: 'You can search a range of stars using .., e.g. stars:1..50 or stars:50..*',
   wrongSyntax: 'You can search stars using a range, e.g. 1..50, or comparison symbols like stars:<=50 or stars:>50',
-  tooManySearchTerms: 'You can only search for one organization at a time, and optionally, filter by stars, e.g. airbnb stars:1..50'
+  tooManySearchTerms: 'You can only search for one organization at a time, and optionally, filter by stars, e.g. netflix stars:1..50'
 }
 
 function setHistory(search) {
@@ -144,12 +144,12 @@ const OrganizationSelect = () => {
   }
 
   return (
-    <>
+    <div className='organization-select'>
       <h2>
         Search for Repositories
       </h2>
       <p>Enter an organization's name to search for its Repositories</p>
-      <p className='filter-hint'>You can also filter by star count, eg `airbnb stars:1..50`</p>
+      <p className='filter-hint'>You can also filter by <span aria-label="stars" role="img">⭐</span>: netflix stars:1..50</p>
 
       <form onSubmit={handleOrgSet}>
         <input type="text" placeholder={organization.name} value={searchInputState} onChange={handleOrgInput} className={error && 'hasError'} /> 
@@ -157,7 +157,7 @@ const OrganizationSelect = () => {
       </form>
 
       {error && <span className="error">{error}</span>}
-    </>
+    </div>
   )
 };
 

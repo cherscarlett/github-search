@@ -13,7 +13,7 @@ import './styles.css';
 
 const App = () => {
   const pathname = encodeURIComponent(window.location.pathname.replace('/', ''));
-  const name = pathname ? pathname : 'airbnb';
+  const name = pathname ? pathname : 'netflix';
   const storedRepos = sessionStorage.getItem(name) || [];
   let repositories = [];
 
@@ -39,7 +39,7 @@ const App = () => {
         } else {
           const url = new URL(window.location.origin);
           window.history.pushState({}, '', url);
-          setOrganization('airbnb');
+          setOrganization('netflix');
         }
       };
       fetchRepos();
@@ -59,10 +59,10 @@ const App = () => {
   return (
     <OrganizationContext.Provider value={{organization, setOrganization}}>
       <div className="App">
-        <h1>Github Repo Search</h1>
+        <h1>Github Repository Search</h1>
         <OrganizationSelect />
 
-        <h2>{organization.name}</h2>
+        <h2>{organization.name}'s repositories</h2>
         {repos.map((repo, index) => (
           <RepositorySummary repo={repo} key={index} />
         ))}

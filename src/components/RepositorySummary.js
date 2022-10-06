@@ -30,11 +30,11 @@ const RepositorySummary = ({repo}) => {
       <header>
         <h1>
           <a href={repo.html_url}>{repo.name}</a>
-        </h1>
-        <div className="repository-summary__meta">
-          <time dateTime={repo.created_at}>
+          <time className="repository-summary__time" dateTime={repo.created_at}>
             {repoCreatedAtFormatted}
           </time>
+        </h1>
+        <div className="repository-summary__meta">
           <ul>
             <li className="repository-summary__meta__issues">
               <span>Open Issues:</span> <a href={repo.issues_url}>{repo.open_issues_count}</a>
